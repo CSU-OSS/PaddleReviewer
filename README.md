@@ -5,6 +5,7 @@
 
 ## 目录结构规范
 
+```
 NAME
 ├── README.md 介绍项目文档入口
 └── PaddleReviewer-JetBrains JetBrains端的前端代码
@@ -17,4 +18,5 @@ NAME
     ├── src           核心源码
         ├── XXX     具体模块
         ├── ...       ...
+```
 
