@@ -8,12 +8,17 @@
 ```
 NAME
 ├── README.md 介绍项目文档入口
-└── PaddleReviewer-JetBrains JetBrains端的前端代码
+└── PaddleReviewer-pycharm pycharm端的前端代码
     ├── docs          文档
     ├── src           核心源码
         ├── XXX     具体模块
         ├── ...       ...
-└── PaddleReviewer-Backend 后端代码
+└── PaddleReviewer-server 后端代码
+    ├── docs          文档
+    ├── src           核心源码
+        ├── XXX     具体模块
+        ├── ...       ...
+└── PaddleReviewer-web 网页端代码
     ├── docs          文档
     ├── src           核心源码
         ├── XXX     具体模块
