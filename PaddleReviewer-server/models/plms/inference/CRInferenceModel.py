@@ -19,20 +19,21 @@ from transformers import (
     AutoTokenizer,
 )
 import logging
-from ..code.models import ReviewerModel, load_model
+from models.plms.code.models import ReviewerModel, load_model
 import json
 
 
-mnt_dir="/data/DataLACP/rambo/data/codereviewer"
-model_path = os.path.join(mnt_dir, "codereviewer")
-max_source_length = 300
-max_target_length = 128
-mask_rate = 0.15 
-beam_size = 10
-device = torch.device("cpu")
+
 
 class CRModel():
-    def __init__(self, model_path, max_source_length, max_target_length, mask_rate, beam_size, device):
+    def __init__(self):
+        mnt_dir="/data/DataLACP/rambo/data/codereviewer"
+        model_path = os.path.join(mnt_dir, "codereviewer")
+        max_source_length = 300
+        max_target_length = 128
+        mask_rate = 0.15 
+        beam_size = 10
+        device = torch.device("cpu")
         self.model_path = model_path
         self.max_source_length = max_source_length
         self.max_target_length = max_target_length
@@ -80,32 +81,32 @@ class CRModel():
                 inputstr += "<del>" + line
             else:
                 inputstr += "<keep>" + line
-        source_ids = self.tokenizer.encode(inputstr, max_length=max_source_length, truncation=True)
-        source_ids = source_ids[:max_source_length - 2]
+        source_ids = self.tokenizer.encode(inputstr, max_length=self.max_source_length, truncation=True)
+        source_ids = source_ids[:self.max_source_length - 2]
         source_ids = [self.tokenizer.bos_id] + source_ids + [self.tokenizer.eos_id]
-        pad_len = max_source_length - len(source_ids)
+        pad_len = self.max_source_length - len(source_ids)
         source_ids += [self.tokenizer.pad_id] * pad_len
 
         input_labels = [-100] * len(source_ids)
 
         pred_ids, ex_ids = [], []
-        source_ids = torch.tensor([source_ids], dtype=torch.long).to(device)
+        source_ids = torch.tensor([source_ids], dtype=torch.long).to(self.device)
         source_mask = source_ids.ne(self.tokenizer.pad_id)
         preds = self.model.generate(source_ids,
                         attention_mask=source_mask,
                         use_cache=True,
-                        num_beams=beam_size,
+                        num_beams=self.beam_size,
                         early_stopping=True,
-                        max_length=max_target_length,
+                        max_length=self.max_target_length,
                         )
         top_preds = list(preds.cpu().numpy())
         pred_ids.extend(top_preds)
         pred_nls = [self.tokenizer.decode(id[1:], skip_special_tokens=True, clean_up_tokenization_spaces=False) for id in pred_ids]
         return pred_nls[0]
 
-
+cr_model = CRModel()
 
 if __name__ == "__main__":
-    crmodel = CRModel(model_path, max_source_length, max_target_length, mask_rate, beam_size, device)
+    crmodel = CRModel()
     diff = "@@ -1,3 +1,3 @@\n-#include <iostream>\n+// #include <iostream>\n int main() {\n"
     print(crmodel.predict(diff))
