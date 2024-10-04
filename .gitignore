@@ -140,3 +140,6 @@ GitHub.sublime-settings
 PaddleReviewer-server/logs/*
 !PaddleReviewer-server/logs/.gitkeep
 .idea/*
+
+# vscode
+/.vscode
