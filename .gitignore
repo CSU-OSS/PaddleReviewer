@@ -137,5 +137,6 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 
-logs/*.*
+PaddleReviewer-server/logs/*
+!PaddleReviewer-server/logs/.gitkeep
 .idea/*
