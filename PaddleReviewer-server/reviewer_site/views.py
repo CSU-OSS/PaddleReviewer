@@ -3,6 +3,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from typing import List
 import logging
+from models.llms import model
 
 # 获取一个logger对象
 logger = logging.getLogger('mylogger')
@@ -13,7 +14,11 @@ def hellowWorld(request):
 @csrf_exempt
 def generate_cr(request):
     logger.info(request.method)
-    rep_dict = {"hello": "hello"}
+    data = request.GET
+    code_diff = data['code_diff']
+    context = data['context']
+    review = model.create_review(code_diff, context)
+    rep_dict = {"result": "1","review":review}
     result = json.dumps(rep_dict)
     return HttpResponse(result, content_type='application/json;charset=utf-8')
 
