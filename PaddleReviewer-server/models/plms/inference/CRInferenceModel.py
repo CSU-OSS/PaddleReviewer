@@ -58,6 +58,7 @@ class CRModel():
         model.cls_head = saved
         #model.to(args.local_rank)
         model.to(device)
+        model.eval()
         self.model = model
         self.config = config
         self.tokenizer = tokenizer
@@ -95,14 +96,38 @@ class CRModel():
         preds = self.model.generate(source_ids,
                         attention_mask=source_mask,
                         use_cache=True,
-                        num_beams=self.beam_size,
-                        early_stopping=True,
+                        num_beams=1,
                         max_length=self.max_target_length,
+                        do_sample=False,
                         )
         top_preds = list(preds.cpu().numpy())
         pred_ids.extend(top_preds)
         pred_nls = [self.tokenizer.decode(id[1:], skip_special_tokens=True, clean_up_tokenization_spaces=False) for id in pred_ids]
         return pred_nls[0]
+    
+    def predict_quality(self, diff):
+        difflines = diff.split("\n")[1:]
+        difflines = [line for line in difflines if len(line.strip()) > 0] 
+        input = " ".join(difflines)
+        source_ids = self.tokenizer.encode(input, max_length=self.max_source_length, truncation=True)
+        source_ids = torch.tensor([source_ids], dtype=torch.long).to(self.device)
+
+        source_mask = source_ids.ne(self.tokenizer.pad_id)
+        logits = self.model(
+                cls=True,
+                input_ids=source_ids,
+                labels=None,
+                attention_mask=source_mask
+            )
+        prediction = torch.argmax(logits, dim=-1).cpu().numpy()
+        return int(prediction[0])
+    
+    def predict_review(self, diff):
+        result = self.predict_quality(diff)
+        if result == 0:
+            return json.dumps({"result": result, "review": "This code is good."})
+        else:
+            return json.dumps({"result": result, "review": self.predict(diff)})
 
 cr_model = CRModel()
 
