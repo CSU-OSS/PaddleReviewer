@@ -27,7 +27,7 @@ import json
 
 class CRModel():
     def __init__(self):
-        mnt_dir="/data/DataLACP/rambo/data/codereviewer"
+        mnt_dir="/home/aistudio"
         model_path = os.path.join(mnt_dir, "codereviewer")
         max_source_length = 300
         max_target_length = 128
