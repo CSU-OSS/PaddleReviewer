@@ -125,9 +125,9 @@ class CRModel():
     def predict_review(self, diff):
         result = self.predict_quality(diff)
         if result == 0:
-            return json.dumps({"result": result, "review": "This code is good."})
+            return {"result": result, "review": "This code is good."}
         else:
-            return json.dumps({"result": result, "review": self.predict(diff)})
+            return {"result": result, "review": self.predict(diff)}
 
 cr_model = CRModel()
 
