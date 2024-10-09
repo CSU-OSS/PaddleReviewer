@@ -14,14 +14,27 @@ def hellowWorld(request):
 
 @csrf_exempt
 def generate_cr(request):
-    logger.info(request.method)
-    data = request.GET
-    code_diff = data['code_diff']
-    context = data['context']
-    review = model.create_review(code_diff, context)
-    rep_dict = {"result": "1","review":review}
-    result = json.dumps(rep_dict)
-    return HttpResponse(result, content_type='application/json;charset=utf-8')
+    result = {}
+    if request.method == 'POST':
+        try:
+            request_data = json.loads(request.body)
+            print(request_data)
+            model_name = request_data.get('model_name')
+            api_key = request_data.get('api_key')
+            base_url = request_data.get('base_url')
+            temperature = request_data.get('temperature')
+            max_tokens = request_data.get('max_tokens')
+            mods = request_data.get('mods')
+            diffs = ""
+            for mod in mods:
+                diffs += mod['diff'] + "\n"
+            context = request_data.get('context')
+            review = model.create_review(diffs, context, model_name, temperature, max_tokens, api_key, base_url)
+            result = {"result": 1, "review": review}
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        
+    return HttpResponse(json.dumps(result), content_type='application/json;charset=utf-8')
 
 @csrf_exempt
 def generate_cr_with_pllms(request):

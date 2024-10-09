@@ -1,8 +1,8 @@
 from openai import OpenAI
 
-def create_review(code_diff, context):
+def create_review(code_diff, context, model_name, temperature, max_tokens, api_key, base_url):
     prompt = generate_review_prompt(code_diff, context)
-    response = get_chatgptapi_response(prompt)
+    response = get_chatgptapi_response(prompt, model_name, temperature, max_tokens, api_key, base_url)
     return response
 
 def few_shot_prompt():
@@ -32,17 +32,18 @@ def generate_review_prompt(code_diff, context):
     return prompt
 
 
-def get_chatgptapi_response(prompt,temperature=1.0):
+def get_chatgptapi_response(prompt, model_name, temperature=1.0, max_tokens=100, api_key="", base_url="https://api.deepseek.com/"):
     client = OpenAI(
-        api_key = "" # your api key
+        api_key=api_key, base_url=base_url
     )
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",  # 确保使用正确的模型名称
+        model=model_name,  # 确保使用正确的模型名称
         messages=[
             {"role": "system", "content": "You are an experienced reviewer reviewing code changes."},
             {"role": "user", "content": prompt}
         ],
-        temperature=temperature
+        temperature=temperature,
+        max_tokens=max_tokens,
     )
     print(response)
     answer = response.choices[0].message.content

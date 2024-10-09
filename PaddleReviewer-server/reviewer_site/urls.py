@@ -20,7 +20,7 @@ from . import views
 urlpatterns = [
     path("", views.hellowWorld, name="helloWorld"),
     path("admin/", admin.site.urls),
-    path("cr", views.generate_cr, name="cmg"),
+    path("crWithLLMs", views.generate_cr, name="cmg"),
     path("crWithPLLMS", views.generate_cr_with_pllms, name="cmgWithPLLMS"),
     # path("cmg", views.generate_commit_message, name="cmg"),
     # path("cmgWithHistory", views.generate_commit_message_with_history, name="cmgWithHistory"),
