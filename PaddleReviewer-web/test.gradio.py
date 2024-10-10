@@ -6,8 +6,8 @@ import gradio as gr
 import json
 import time
 
-sys.path.append("D:\\projectpy\\PaddleReviewer\\PaddleReviewer-server")
-sys.path.append("D:\\projectpy\\PaddleReviewer\\PaddleReviewer-web")
+sys.path.append("/home/aistudio/PaddleReviewer/PaddleReviewer-server")
+sys.path.append("/home/aistudio/PaddleReviewer/PaddleReviewer-web")
 from models.plms.inference.CRInferenceModel import cr_model
 from ModelConfig import ModelConfig
 from models.llms import model
@@ -106,7 +106,7 @@ def generate_reviews(commit_changes, diff_output, model_config):
             old_path = file_change['old_path']
             new_path = file_change['new_path']
             diff_content = file_change['diff']
-            print("11111111111111"+diff_content+"11111111111111111111111111111111111111")
+ 
             result = quickstart(diff_content, model_config)
 
             if result['result'] == 1:
